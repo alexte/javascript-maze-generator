@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Amazeing</title>
+    <style>
+    	body {	background-color: #000; color: #FFF; 
+	        font-family: sans-serif; font-size: 18pt; 
+             }
+	h1 { font-size:1.2em; }
+	#maze { position:relative; }
+	.tile { position:absolute; border: 1px solid black; width:10px; height:10px; background-color:black; }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script>
+	    var sizex=40;
+	    var sizey=40;
+
+        var start={x:7,y:48};
+        var finish={x:5,y:-1};
+	
+        var tiles=[];
+
+	    function build_field()
+	    {
+	        for (var i=0;i<sizex;i++)
+            {
+		        tiles[i]=[];
+		        for (var j=0;j<sizey;j++)
+		        {
+		            tiles[i][j]={};
+		            tiles[i][j].div=$('<div class=tile></div>').appendTo('#maze').css({ left:(i*12+1)+"px", top:(j*12+1)+"px" });
+		            tiles[i][j].maze_done=false;
+		        }
+	        }    
+	    }
+
+        function build_maze(x,y,sourcex,sourcey) 
+	    {
+	        // var order=Math.floor(Math.random()*6);
+	        if (x==finish.x && y==finish.y) return "great";
+	        if (x==start.x && y==start.y) return "great";
+	        if (x<0 || x>=sizex || y<0 || y>=sizey) return "wall";
+	        if (tiles[x][y].maze_done) return "wall";
+ 	        tiles[x][y].maze_done=true;
+ 
+	        var next=[];
+	        if (x-1!=sourcex || y!=sourcey) next.push({x:x-1,y:y,bordername:"borderLeft"});
+	        if (x+1!=sourcex || y!=sourcey) next.push({x:x+1,y:y,bordername:"borderRight"});
+	        if (x!=sourcex || y-1!=sourcey) next.push({x:x,y:y-1,bordername:"borderTop"});
+	        if (x!=sourcex || y+1!=sourcey) next.push({x:x,y:y+1,bordername:"borderBottom"});
+
+	        while(next.length>0)
+	        {
+		        var i=0;
+		        if (next.length>1) i=Math.floor(Math.random()*next.length);
+
+		        var ret=build_maze(next[i].x,next[i].y,x,y);
+		        if (ret=="wall") tiles[x][y].div.css(next[i].bordername, "1px solid white" );
+		        next.splice(i,1);
+	        }
+	        return "great";
+        }
+
+	    $(document).ready(function(){
+	        build_field();
+	        build_maze(7,11,7,12);
+	    });
+    </script>
+</head>
+<body>
+    <h1>Amazeing</h1>
+    <div id=maze></div>
+</body>
+</html>
